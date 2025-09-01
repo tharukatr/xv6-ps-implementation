@@ -105,3 +105,54 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+extern struct proc proc[NPROC];
+extern struct spinlock wait_lock;
+
+uint64
+sys_ps(void)
+{
+  int numprocs = 0;
+  acquire(&wait_lock);
+  for (int i = 0; i < NPROC; i++)
+  {
+    struct proc *p = &proc[i];
+    if (p->state != UNUSED)
+    {
+      numprocs++;
+      char *state = "";
+      switch (p->state)
+      {
+        case RUNNABLE: state = "runnable"; break;
+        case ZOMBIE: state = "zombie"; break;
+        case RUNNING: state = "running"; break;
+        case SLEEPING: state = "sleeping"; break;
+        default: break;
+      }
+      printf("%d %d %s %s %ld\n", p->pid, p->parent ? p->parent->pid : 0, state, p->name, p->sz);
+    }
+  }
+  release(&wait_lock);
+  printf("There are a total of %d processes in the system", numprocs);
+  return 0;
+}
+
+uint64
+sys_psr(void)
+{
+  acquire (&wait_lock);
+  int numprocs = 0;
+
+  for (int i = 0; i < NPROC; i++)
+  { 
+  struct proc *p = &proc[i];
+
+  if (p->state == RUNNING)
+  {
+    printf("%d %d running %s %ld\n", p->pid, p-> parent ? p->parent->pid : 0, p->name, p->sz);
+    numprocs++;
+  }
+}
+  release(&wait_lock);
+  return 0;
+}

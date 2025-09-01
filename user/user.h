@@ -25,6 +25,10 @@ char* sys_sbrk(int,int);
 int pause(int);
 int uptime(void);
 
+// Custom system call commands
+int ps(void);
+int psr(void);
+
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
